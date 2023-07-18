@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const express = require("express");
 const app = express();
 const usersRouter = express.Router();
+const jwt = require("jsonwebtoken");
 const { usersCollection } = require("../../DBConfig/DBConfig");
 
 const createNewUser = async (req, res) => {
@@ -33,22 +34,31 @@ const createNewUser = async (req, res) => {
 
 const HandleLogin = async (req, res) => {
   const { email, password } = req.body;
-
   try {
     // Find the user based on the email
     const user = await usersCollection.findOne({ email });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res
+        .status(404)
+        .json({ message: "User not found. please register" });
     }
 
     // Check if the password matches
     const passwordMatches = await bcrypt.compare(password, user.hashedPassword);
+    console.log(passwordMatches);
     if (!passwordMatches) {
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(401).json({ message: "Invalid password" });
     }
 
     // Create and send the JWT token in the response
-    const token = jwt.sign({ userId: user._id }, "your-secret-key");
+    const token = jwt.sign(
+      { userId: user._id, userEmail: email },
+      process.env.USER_JWT_TOKEN,
+      {
+        expiresIn: "1h",
+      }
+    );
+
     res.json({ token });
   } catch (error) {
     res.status(500).json({ error: "Something went wrong" });
