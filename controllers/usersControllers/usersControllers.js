@@ -5,7 +5,6 @@ const usersRouter = express.Router();
 
 const {
   usersCollection,
-  isLoggedInCollection,
 } = require("../../DBConfig/DBConfig");
 const { createJwtToken } = require("../../middleware/createJwtToken");
 
@@ -14,10 +13,10 @@ const createNewUser = async (req, res) => {
 
   try {
     // Check if the user already exists
-    // const existingUser = await usersCollection.findOne({ email });
-    // if (existingUser) {
-    //   return res.status(409).json({ message: "User already exists" });
-    // }
+    const existingUser = await usersCollection.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,47 +60,12 @@ const handleLogin = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
-const handleIsLoggedInPost = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const existingUser = await isLoggedInCollection.findOne({ email });
-    // console.log(existingUser);
-    if (existingUser) {
-      return res
-        .status(409)
-        .json({ message: "User isLoggedIn already exists" });
-    }
-    await isLoggedInCollection.insertOne(req.body);
-    return res.status(201).json({ message: "User isLoggedIn created" });
-  } catch (error) {
-    res.status(500).json({ error: "Something went wrong" });
-  }
-};
 
-const handleIsLoggedInGet = async (req, res) => {
-  try {
-    const { email } = req.query;
-
-    let result = await isLoggedInCollection.findOne({ email });
-    if (result) {
-      console.log(result);
-      return res.status(200).json(result);
-    } else {
-      res.status(404).json({ message: "User isLoggedIn not found" });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Something went wrong" });
-  }
-};
 
 // routes
 usersRouter.route("/register").post(createNewUser);
 usersRouter.route("/jwt").post(createJwtToken);
 usersRouter.route("/login").post(handleLogin);
-usersRouter
-  .route("/isLoggedIn")
-  .get(handleIsLoggedInGet)
-  .post(handleIsLoggedInPost);
 
 // exports router
 module.exports = { usersRouter };

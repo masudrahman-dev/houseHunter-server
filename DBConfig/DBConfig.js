@@ -12,7 +12,7 @@ const client = new MongoClient(uri, {
 });
 
 let usersCollection;
-let isLoggedInCollection;
+let housesCollection;
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -20,8 +20,7 @@ async function run() {
     // Send a ping to confirm a successful connection
     client.db("admin").command({ ping: 1 });
     usersCollection = client.db("houseHunter-DB").collection("users");
-    isLoggedInCollection = client.db("houseHunter-DB").collection("isLoggedIn");
-
+    housesCollection = client.db("houseHunter-DB").collection("houses");
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
@@ -31,4 +30,4 @@ async function run() {
   }
 }
 run().catch(console.dir);
-module.exports = { usersCollection,isLoggedInCollection };
+module.exports = { usersCollection,housesCollection };
