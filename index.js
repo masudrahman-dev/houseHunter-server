@@ -8,7 +8,6 @@ app.use(bodyParser.json());
 require("dotenv").config();
 const { usersRouter } = require("./controllers/usersControllers/usersControllers");
 const { housesRouter } = require("./controllers/productsControllers/housesControllers");
-// const usersRouter = require("./routes/usersRoutes/usersRoutes");
 
 
 // User

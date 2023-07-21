@@ -20,6 +20,7 @@ const addNewHouse = async (req, res) => {
   }
 };
 const getAllHouses = async (req, res) => {
+  console.log('click');
   try {
     const result = await housesCollection.find({}).toArray();
     res.status(200).json(result);
@@ -29,7 +30,7 @@ const getAllHouses = async (req, res) => {
 };
 
 // routes
-housesRouter.route("/addNewHouse").post(addNewHouse).get(getAllHouses);
+housesRouter.route("/").post(addNewHouse).get(getAllHouses);
 
 // exports router
 module.exports = { housesRouter };
